@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Евгений Мешков — AI Workflow Designer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f8f9fb;
+    --text: #1a1a2e;
+    --text-secondary: #555;
+    --text-muted: #888;
+    --border: #e0e0e0;
+    --card-bg: #fff;
+    --card-border: #eee;
+    --tag-bg: #f0edff;
+    --tag-text: #6c5ce7;
+    --table-header: #f0f0f5;
+    --chat-bubble-bot: #f0f0f5;
+    --chat-bubble-user: #6c5ce7;
+    --chat-bubble-text: #333;
+    --chat-bubble-user-text: #fff;
+    --chat-input-bg: #fff;
+    --gate-bg: #1a1a2e;
+    --gate-box-bg: #fff;
+    --gradient: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    --gradient2: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  }
+
+  .dark-theme {
+    --bg: #12121a;
+    --text: #e8e8f0;
+    --text-secondary: #aaa;
+    --text-muted: #777;
+    --border: #2a2a3a;
+    --card-bg: #1a1a26;
+    --card-border: #2a2a3a;
+    --tag-bg: #2a1f4a;
+    --tag-text: #b8a9ff;
+    --table-header: #1e1e2e;
+    --chat-bubble-bot: #252535;
+    --chat-bubble-user: #6c5ce7;
+    --chat-bubble-text: #d0d0e0;
+    --chat-bubble-user-text: #fff;
+    --chat-input-bg: #1e1e2e;
+    --gate-bg: #0a0a12;
+    --gate-box-bg: #1a1a26;
+    --gradient: linear-gradient(135deg, #5a4bd1, #8a7ce8);
+    --gradient2: linear-gradient(135deg, #5a4bd1, #8a7ce8);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 40px 20px;
+    max-width: 960px;
+    margin: 0 auto;
+    transition: background 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+  }
+  h1 { font-size: 2.4em; font-weight: 700; letter-spacing: -0.5px; }
+  h1 span { color: #6c5ce7; }
+  .subtitle { font-size: 1.15em; color: var(--text-secondary); margin: 4px 0 2px; font-weight: 400; }
+  .pseudo { font-size: 0.9em; color: var(--text-muted); margin-bottom: 6px; }
+  .header { border-bottom: 2px solid #6c5ce7; padding-bottom: 16px; margin-bottom: 24px; }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 0.78em; font-weight: 500;
+  }
+  .badge.aqua { background: #e0f7fa; color: #00796b; }
+  .badge.gold { background: #fff8e1; color: #f57f17; }
+  .badge.purple { background: var(--tag-bg); color: var(--tag-text); }
+  .badge.pink { background: #fce4ec; color: #c62828; }
+  .badge.green { background: #e8f5e9; color: #2e7d32; }
+  .dark-theme .badge.aqua { background: #0a3a3a; color: #80cbc4; }
+  .dark-theme .badge.gold { background: #3a2a0a; color: #ffd54f; }
+  .dark-theme .badge.pink { background: #3a0a0a; color: #ef9a9a; }
+  .dark-theme .badge.green { background: #0a2a0a; color: #a5d6a7; }
+
+  .section { margin-bottom: 28px; }
+  .section h2 {
+    font-size: 1.2em; font-weight: 600; color: #6c5ce7;
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 12px; padding-bottom: 4px; border-bottom: 1px solid var(--border);
+  }
+
+  .summary-box {
+    background: var(--gradient);
+    color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px;
+  }
+  .summary-box p { margin-bottom: 6px; font-size: 0.95em; }
+  .summary-box p:last-child { margin-bottom: 0; }
+  .summary-box strong { color: #ffeaa7; }
+  .dark-theme .summary-box strong { color: #ffd54f; }
+
+  .project { margin-bottom: 18px; }
+  .project h3 { font-size: 1.05em; font-weight: 600; color: var(--text); }
+  .project h3 .date { font-weight: 400; font-size: 0.85em; color: var(--text-muted); }
+  .project .desc { font-size: 0.93em; color: var(--text-secondary); margin: 4px 0 6px; }
+  .project ul { margin: 2px 0 0 18px; }
+  .project li { margin-bottom: 3px; font-size: 0.93em; color: var(--text); opacity: 0.85; }
+
+  .skills-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-top: 10px;
+  }
+  .skills-group { background: var(--card-bg); border-radius: 10px; padding: 14px 16px; border: 1px solid var(--card-border); }
+  .skills-group h3 { font-size: 0.85em; color: #6c5ce7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .skills-group .tag { display: inline-block; background: var(--tag-bg); padding: 3px 10px; border-radius: 16px; font-size: 0.8em; margin: 2px 3px; color: var(--tag-text); }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.93em; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: var(--table-header); color: var(--text-secondary); font-weight: 500; }
+
+  /* Chat — ChatGPT-стиль, всегда виден, нельзя свернуть */
+  .chat-panel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 999;
+    width: 400px; background: var(--card-bg); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .chat-header {
+    background: var(--gradient); color: white;
+    padding: 10px 16px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+  }
+  .chat-header .model-name { font-size: 0.85em; font-weight: 600; color: white; }
+  .chat-header .status { font-size: 0.7em; color: rgba(255,255,255,0.8); }
+  .chat-header .model-badge {
+    font-size: 0.65em; background: rgba(255,255,255,0.2); color: white;
+    padding: 2px 8px; border-radius: 10px;
+  }
+  .chat-messages {
+    flex: 1; overflow-y: auto; padding: 8px 16px 4px;
+    scroll-behavior: smooth;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .msg { margin-bottom: 10px; display: flex; }
+  .msg.ai { justify-content: flex-start; }
+  .msg.user { justify-content: flex-end; }
+  .msg .bubble {
+    max-width: 88%; padding: 10px 14px; border-radius: 16px;
+    font-size: 0.93em; line-height: 1.55;
+  }
+  .msg.ai .bubble { background: var(--chat-bubble-bot); color: var(--chat-bubble-text); }
+  .msg.user .bubble { background: var(--chat-bubble-user); color: var(--chat-bubble-user-text); }
+  .msg.ai .bubble.welcome {
+    background: var(--gradient2); color: white; padding: 14px 16px;
+  }
+  .dark-theme .msg.ai .bubble.welcome { background: linear-gradient(135deg, #4a3bb0, #7a6cd0); }
+  .msg.ai .bubble.welcome .quick-btn { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); color: white; }
+  .msg.ai .bubble.welcome .quick-btn:hover { background: rgba(255,255,255,0.3); color: white; }
+  .msg .typing-dots { display: flex; gap: 4px; padding: 4px 0; }
+  .msg .typing-dots span {
+    width: 7px; height: 7px; background: #999; border-radius: 50%;
+    animation: dotPulse 1.4s infinite;
+  }
+  .msg .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .msg .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotPulse { 0%,80%,100% { opacity: 0.3; } 40% { opacity: 1; } }
+
+  .chat-input-wrap {
+    padding: 8px 16px 14px; display: flex; gap: 8px; align-items: flex-end;
+  }
+  .chat-input-wrap input {
+    flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 24px;
+    font-size: 0.88em; outline: none; font-family: inherit; background: var(--chat-input-bg); color: var(--text);
+    resize: none; line-height: 1.4;
+  }
+  .chat-input-wrap input:focus { border-color: #6c5ce7; }
+  .chat-input-wrap button {
+    background: #6c5ce7; color: white; border: none; width: 36px; height: 36px;
+    border-radius: 50%; font-size: 16px; cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .chat-input-wrap button:hover { background: #5a4bd1; }
+  .chat-input-wrap button:disabled { background: #ccc; cursor: not-allowed; }
+  .quick-buttons { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+  .quick-btn {
+    background: var(--card-bg); border: 1.5px solid #6c5ce7; color: #6c5ce7;
+    padding: 4px 11px; border-radius: 18px; font-size: 0.77em; cursor: pointer;
+    transition: 0.2s; font-family: inherit; white-space: nowrap;
+  }
+  .quick-btn:hover { background: #6c5ce7; color: white; }
+  .quick-btn:active { transform: scale(0.95); }
+  .dark-theme .quick-btn { color: var(--tag-text); border-color: var(--tag-text); }
+
+  .offtopic-warning {
+    background: #fff3e0; border: 1px solid #ffcc80; border-radius: 10px;
+    padding: 10px 14px; margin: 6px 0; display: flex; align-items: flex-start; gap: 8px;
+    font-size: 0.85em; color: #e65100;
+  }
+  .dark-theme .offtopic-warning { background: #2a1a0a; border-color: #7a4a0a; color: #ffb74d; }
+  .offtopic-warning .icon { font-size: 1.2em; }
+
+  .ai-banner {
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: white; border-radius: 12px; padding: 12px 16px; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px; cursor: pointer;
+    transition: 0.3s; font-size: 0.9em;
+  }
+  .ai-banner:hover { transform: scale(1.01); box-shadow: 0 4px 20px rgba(108,92,231,0.3); }
+  .ai-banner .icon { font-size: 1.6em; flex-shrink: 0; }
+  .ai-banner .text { flex: 1; }
+  .ai-banner .text strong { color: #ffeaa7; }
+  .ai-banner .hint { font-size: 0.8em; opacity: 0.85; margin-top: 2px; }
+
+  @media (max-width: 700px) {
+    .skills-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 1.7em; }
+  }
+
+  /* ====== PRESENTATION SLIDES ====== */
+  .presentation {
+    position: fixed; inset: 0; z-index: 9000;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .presentation.hidden { display: none; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px; opacity: 0; pointer-events: none;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    transform: scale(0.95);
+  }
+  .slide.active { opacity: 1; pointer-events: auto; transform: scale(1); }
+  .slide.exit { opacity: 0; transform: scale(1.05) translateY(-20px); }
+
+  .slide-nav {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 12px; align-items: center;
+  }
+  .slide-dot {
+    width: 10px; height: 10px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,0.25); cursor: pointer; transition: 0.3s;
+  }
+  .slide-dot.active { background: white; transform: scale(1.3); }
+  .slide-btn {
+    padding: 12px 32px; border: none; border-radius: 30px;
+    font-size: 1em; font-weight: 600; cursor: pointer;
+    transition: 0.3s; letter-spacing: 0.3px;
+  }
+  .slide-btn:hover { transform: scale(1.05); }
+
+  /* Slide 1 — Apple minimal */
+  .slide-1 { background: #0a0a0f; }
+  .slide-1 .title {
+    font-size: clamp(2rem, 5vw, 4rem); font-weight: 300; color: white;
+    letter-spacing: -0.02em; text-align: center; line-height: 1.2;
+  }
+  .slide-1 .title em { font-style: normal; background: linear-gradient(135deg,#6c5ce7,#a29bfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .slide-1 .sub {
+    font-size: clamp(1rem, 2vw, 1.4rem); color: rgba(255,255,255,0.5);
+    margin-top: 20px; font-weight: 300; letter-spacing: 0.3px;
+  }
+  .slide-1 .line {
+    width: 60px; height: 2px; background: #6c5ce7; margin-top: 30px; border-radius: 2px;
+  }
+  .slide-hook {
+    margin-top: 24px; font-size: 0.85em; color: rgba(255,255,255,0.35);
+    font-style: italic; letter-spacing: 0.5px; text-align: center;
+  }
+
+  /* Slide 2 — Terminal retro */
+  .slide-2 { background: #0d1117; font-family: 'Courier New', monospace; }
+  .slide-2 .terminal {
+    max-width: 700px; width: 100%; background: #161b22; border-radius: 12px;
+    border: 1px solid #30363d; overflow: hidden;
+  }
+  .slide-2 .term-header {
+    padding: 10px 16px; background: #21262d; display: flex; gap: 8px; align-items: center;
+  }
+  .slide-2 .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .slide-2 .term-dot:nth-child(1) { background: #ff5f56; }
+  .slide-2 .term-dot:nth-child(2) { background: #ffbd2e; }
+  .slide-2 .term-dot:nth-child(3) { background: #27c93f; }
+  .slide-2 .term-title { color: rgba(255,255,255,0.4); font-size: 0.8em; margin-left: 8px; }
+  .slide-2 .term-body { padding: 24px; font-size: clamp(0.85rem, 1.5vw, 1.1rem); line-height: 1.8; }
+  .slide-2 .term-line { color: #7ee787; margin: 6px 0; white-space: pre-wrap; }
+  .slide-2 .term-line .prompt { color: #58a6ff; }
+  .slide-2 .term-line .comment { color: rgba(255,255,255,0.3); }
+  .slide-2 .cursor {
+    display: inline-block; width: 8px; height: 1.1em; background: #7ee787;
+    animation: blink 1s step-end infinite; vertical-align: text-bottom; margin-left: 4px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Slide 3 — Claude Code terminal */
+  .slide-3 { background: #0d1117; }
+  .slide-3 .cc-terminal {
+    max-width: 640px; width: 100%; background: #0d1117;
+    border: 1px solid #30363d; border-radius: 12px; overflow: hidden;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  }
+  .slide-3 .cc-header {
+    padding: 10px 16px; background: #161b22; display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid #30363d;
+  }
+  .slide-3 .cc-header .cc-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .slide-3 .cc-header .cc-dot:nth-child(1) { background: #ff5f56; }
+  .slide-3 .cc-header .cc-dot:nth-child(2) { background: #ffbd2e; }
+  .slide-3 .cc-header .cc-dot:nth-child(3) { background: #27c93f; }
+  .slide-3 .cc-header .cc-label {
+    color: rgba(255,255,255,0.4); font-size: 0.75em; margin-left: 4px;
+    font-family: -apple-system, sans-serif;
+  }
+  .slide-3 .cc-body { padding: 20px 24px; min-height: 200px; }
+  .slide-3 .cc-line {
+    font-size: clamp(0.8rem, 1.4vw, 0.95rem); line-height: 1.7; margin: 4px 0;
+    color: rgba(255,255,255,0.65); white-space: pre-wrap; font-family: inherit;
+    min-height: 1.2em;
+  }
+  .slide-3 .cc-prompt { color: #58a6ff; }
+  .slide-3 .cc-line.cmd { color: #e6edf3; }
+  .slide-3 .cc-line.error { color: #ff6b6b; }
+  .slide-3 .cc-line.highlight { color: #7ee787; }
+  .slide-3 .cc-line.dim { color: rgba(255,255,255,0.35); }
+  .slide-3 .cc-cursor {
+    display: inline-block; width: 7px; height: 1em;
+    background: #7ee787; animation: blink 1s step-end infinite;
+    vertical-align: text-bottom; margin-left: 3px;
+  }
+  .slide-3 .cc-spacer { height: 8px; }
+  .slide-3 .cc-hr { border: none; border-top: 1px solid #21262d; margin: 12px 0; }
+  .slide-3 .cc-type-line::after {
+    content: '▊'; animation: blink 1s step-end infinite;
+    color: #7ee787; margin-left: 2px;
+  }
+  .slide-3 .cc-reply { transition: opacity 0.5s ease; }
+
+  /* Slide 4 — Live LLM model */
+  .slide-4 { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
+  .slide-4 .llm-wrap { text-align: center; max-width: 650px; }
+  .slide-4 .llm-badge {
+    display: inline-block; padding: 6px 18px; border-radius: 20px;
+    background: rgba(108,92,231,0.3); border: 1px solid #6c5ce7;
+    color: #c8bfff; font-size: 0.8em; font-weight: 500; margin-bottom: 20px;
+  }
+  .slide-4 .llm-title {
+    font-size: clamp(1.6rem, 3.5vw, 2.5rem); font-weight: 600; color: white;
+    line-height: 1.3;
+  }
+  .slide-4 .llm-title em { font-style: normal; color: #81ecec; }
+  .slide-4 .llm-sub {
+    font-size: clamp(0.9rem, 1.8vw, 1.15rem); color: rgba(255,255,255,0.55);
+    margin-top: 16px; line-height: 1.6;
+  }
+  .slide-4 .llm-features {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    margin-top: 28px;
+  }
+  .slide-4 .llm-feat {
+    padding: 10px 18px; border-radius: 10px; font-size: 0.82em;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.6);
+  }
+  .slide-4 .llm-challenge {
+    margin-top: 24px; display: inline-block; padding: 12px 24px;
+    border: 1px dashed rgba(129,236,236,0.3); border-radius: 12px;
+    color: rgba(129,236,236,0.7); font-size: 0.9em; font-weight: 500;
+    cursor: pointer; transition: 0.3s;
+  }
+  .slide-4 .llm-challenge:hover { background: rgba(129,236,236,0.05); border-color: #81ecec; color: #81ecec; }
+
+  /* Slide 5 — CTA */
+  .slide-5 { background: #0a0a0f; }
+  .slide-5 .cta-title {
+    font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 300; color: white;
+    text-align: center; letter-spacing: -0.02em;
+  }
+  .slide-5 .cta-sub {
+    font-size: clamp(0.9rem, 1.8vw, 1.2rem); color: rgba(255,255,255,0.4);
+    margin-top: 12px; text-align: center;
+  }
+  .slide-5 .cta-btn {
+    margin-top: 40px; padding: 16px 48px; border: none; border-radius: 40px;
+    background: linear-gradient(135deg,#6c5ce7,#a29bfe); color: white;
+    font-size: 1.1em; font-weight: 600; cursor: pointer;
+    transition: 0.3s; letter-spacing: 0.5px;
+  }
+  .slide-5 .cta-btn:hover { transform: scale(1.05); box-shadow: 0 8px 30px rgba(108,92,231,0.4); }
+
+  @media (max-width: 900px) {
+    #resumeContent { margin-right: 0; padding-bottom: calc(50vh + 20px); }
+    .chat-panel {
+      position: fixed; top: auto; bottom: 0; left: 0; right: 0;
+      width: 100%; height: 50vh; border-left: none; border-top: 1px solid var(--border);
+      border-radius: 16px 16px 0 0; z-index: 999; overflow: hidden;
+    }
+    .chat-messages { max-height: none; }
+  }
+  @media (max-width: 700px) {
+    .slide { padding: 24px; }
+    .slide-2 .term-body { padding: 16px; font-size: 0.8rem; }
+    .slide-4 .llm-features { gap: 8px; }
+    .slide-4 .llm-feat { padding: 8px 14px; font-size: 0.75em; }
+    .slide-5 .cta-btn { padding: 14px 36px; font-size: 1em; }
+  }
+
+  /* Password gate */
+  .gate-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--gate-bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+  }
+  .gate-box {
+    background: var(--gate-box-bg); border-radius: 16px; padding: 36px;
+    max-width: 400px; width: 90%; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .gate-box h2 { font-size: 1.2em; color: #6c5ce7; margin-bottom: 6px; }
+  .gate-box p { font-size: 0.9em; color: var(--text-secondary); margin-bottom: 16px; }
+  .gate-box input {
+    width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: 10px;
+    font-size: 1em; font-family: inherit; outline: none; text-align: center;
+    transition: 0.2s; box-sizing: border-box; background: var(--chat-input-bg); color: var(--text);
+  }
+  .gate-box input:focus { border-color: #6c5ce7; }
+  .gate-box .error { color: #e53935; font-size: 0.85em; margin-top: 8px; display: none; }
+  .gate-box button {
+    margin-top: 12px; width: 100%; padding: 12px;
+    background: #6c5ce7; color: white; border: none; border-radius: 10px;
+    font-size: 1em; font-family: inherit; cursor: pointer; font-weight: 600;
+    transition: 0.2s;
+  }
+  .gate-box button:hover { background: #5a4bd1; }
+  .gate-box button:disabled { background: #ccc; cursor: not-allowed; }
+  .gate-lock { font-size: 3em; margin-bottom: 12px; }
+
+  /* Theme toggle inline */
+  .theme-toggle-inline {
+    width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+    background: var(--card-bg); border: 1.5px solid var(--border);
+    color: var(--text); font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s ease; font-family: inherit; margin-top: 4px;
+  }
+  .theme-toggle-inline:hover { transform: scale(1.1); border-color: #6c5ce7; }
+  .theme-toggle-inline:active { transform: scale(0.9); }
+
+  /* Theme picker cards */
+  .theme-picker { display: flex; gap: 16px; justify-content: flex-start; }
+  .theme-card {
+    flex: 1; max-width: 180px; padding: 16px; border-radius: 14px;
+    border: 2px solid var(--border); background: var(--card-bg);
+    cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-family: inherit; font-size: 1em; font-weight: 500; color: var(--text);
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .theme-card:hover { border-color: #6c5ce7; transform: translateY(-3px); box-shadow: 0 8px 30px rgba(108,92,231,0.15); }
+  .theme-card:active { transform: scale(0.97); }
+  .theme-preview {
+    width: 100%; height: 80px; border-radius: 8px; overflow: hidden;
+    display: flex; flex-direction: column; gap: 4px; padding: 8px;
+  }
+  .light-preview { background: #f8f9fb; }
+  .dark-preview { background: #1a1a26; }
+  .tp-bar { height: 8px; border-radius: 4px; margin-bottom: 4px; }
+  .light-preview .tp-bar { background: linear-gradient(90deg, #6c5ce7, #a29bfe); }
+  .dark-preview .tp-bar { background: linear-gradient(90deg, #5a4bd1, #8a7ce8); }
+  .tp-line { height: 4px; border-radius: 2px; opacity: 0.5; }
+  .light-preview .tp-line { background: #ccc; }
+  .dark-preview .tp-line { background: #555; }
+  .tp-line.short { width: 60%; }
+
+  /* ========== ЭФФЕКТЫ ========== */
+
+  /* Пульсирующее свечение summary-box */
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(108,92,231,0.1), 0 0 30px rgba(108,92,231,0.03); }
+    50% { box-shadow: 0 0 25px rgba(108,92,231,0.25), 0 0 60px rgba(108,92,231,0.08); }
+  }
+  .summary-box { animation: glow-pulse 4s ease-in-out infinite; position: relative; overflow: hidden; }
+
+  /* Анимированный градиент текста в имени — аккуратный */
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  h1 span {
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe, #6c5ce7);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 6s ease infinite;
+  }
+
+  /* Появление секций при скролле */
+  .section { opacity: 0; transform: translateY(24px); transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .section.visible { opacity: 1; transform: translateY(0); }
+
+  /* Подъём карточек при наведении */
+  .project { transition: all 0.3s ease; border-radius: 10px; padding: 4px 10px; margin-left: -10px; margin-right: -10px; }
+  .project:hover { background: var(--card-bg); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108,92,231,0.08); }
+  .dark-theme .project:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+
+  /* Скиллы */
+  .skills-group { transition: all 0.3s ease; }
+  .skills-group:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(108,92,231,0.08); }
+  .dark-theme .skills-group:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+
+  /* Бейджи */
+  .badge { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: default; }
+  .badge:hover { transform: scale(1.1) translateY(-1px); }
+
+  /* Таблица */
+  table tr { transition: background 0.2s; }
+  table tr:hover { background: var(--tag-bg) !important; }
+
+  /* Эффект печати */
+  @keyframes blink-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  .typing-cursor::after { content: '▊'; display: inline; animation: blink-cursor 0.6s infinite; color: var(--text-muted); margin-left: 2px; }
+
+  /* Свечение инпута */
+  .chat-input-wrap input:focus { border-color: #6c5ce7; box-shadow: 0 0 0 3px rgba(108,92,231,0.1); }
+
+  /* === ПЕРЕХОД С ГЕЙТА НА РЕЗЮМЕ === */
+  .gate-box { animation: gate-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .theme-box { animation: theme-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @keyframes gate-in { from { opacity: 0; transform: scale(0.92) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  @keyframes theme-in { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+  .gate-overlay {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .gate-overlay.fade-out {
+    opacity: 0;
+    transform: scale(1.05);
+    pointer-events: none;
+  }
+  #themeOverlay { display: none; }
+  #themeOverlay.open { display: flex; animation: theme-overlay-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @keyframes theme-overlay-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  #themeOverlay.closing { animation: theme-overlay-out 0.4s ease forwards; }
+  @keyframes theme-overlay-out { to { opacity: 0; transform: scale(1.05); } }
+
+  #resumeContent {
+    animation: content-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-right: 420px;
+  }
+  @media (max-width: 900px) {
+    #resumeContent { margin-right: 0; padding-bottom: calc(50vh + 20px); }
+  }
+  @keyframes content-in {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Баннер AI */
+  .ai-banner { position: relative; overflow: hidden; transition: all 0.3s ease; }
+  .ai-banner:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(108,92,231,0.2); }
+
+  /* Плавный скролл */
+  html { scroll-behavior: smooth; }
+
+  /* Нижняя граница хедера */
+  .header { position: relative; }
+  .header::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #6c5ce7, #a29bfe); }
+
+  /* Confetti */
+  @keyframes confetti-fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+</style>
+</head>
+<body>
+
+<!-- Password Gate -->
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-box">
+    <div class="gate-lock">🔒</div>
+    <h2>Мешков Евгений Александрович</h2>
+    <p style="color:#6c5ce7;font-weight:500;font-size:1em">AI Workflow Designer · 01.03.1993</p>
+    <p style="font-size:0.85em;color:var(--text-muted);margin-top:-8px;margin-bottom:16px">Введи пароль для полного доступа к резюме</p>
+    <p style="font-size:0.82em;color:var(--text-muted);margin-top:-10px;margin-bottom:16px">Если вам не выдали пароль — напишите на <a href="mailto:meskovevg@gmail.com" style="color:#6c5ce7;text-decoration:underline">meskovevg@gmail.com</a>, чтобы получить доступ к резюме с искусственным интеллектом</p>
+    <p style="font-size:0.8em;color:var(--text-muted);margin-top:-12px;margin-bottom:16px;padding:10px 14px;background:rgba(108,92,231,0.08);border-radius:10px;line-height:1.5">⚠️ Если вы попали сюда случайно — нет, всё верно. Это моё CV, собранное через AI без единой строчки кода. Дальше — живое резюме с чатом на реальной LLM-модели.</p>
+    <input type="password" id="gatePassword" placeholder="Пароль" autofocus>
+    <div class="error" id="gateError">Неверный пароль</div>
+    <button id="gateBtn">Открыть резюме</button>
+  </div>
+</div>
+
+<!-- Theme Selection (shows after password) -->
+<div class="gate-overlay" id="themeOverlay">
+  <div class="gate-box theme-box" style="max-width:440px">
+    <div style="font-size:3em;margin-bottom:12px">🎨</div>
+    <h2>Выбери оформление</h2>
+    <p style="font-size:0.9em;color:var(--text-secondary);margin-bottom:20px">Светлая или тёмная тема — как тебе удобнее</p>
+    <div class="theme-picker">
+      <button class="theme-card" onclick="pickTheme('light')">
+        <div class="theme-preview light-preview">
+          <div class="tp-bar"></div>
+          <div class="tp-line"></div><div class="tp-line short"></div>
+          <div class="tp-line"></div><div class="tp-line short"></div>
+        </div>
+        <span>☀️ Светлая</span>
+      </button>
+      <button class="theme-card" onclick="pickTheme('dark')">
+        <div class="theme-preview dark-preview">
+          <div class="tp-bar"></div>
+          <div class="tp-line"></div><div class="tp-line short"></div>
+          <div class="tp-line"></div><div class="tp-line short"></div>
+        </div>
+        <span>🌙 Тёмная</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Presentation slides (shows after theme selection) -->
+<div class="presentation hidden" id="presentation">
+  <!-- Slide 1 -->
+  <div class="slide slide-1 active" data-slide="0">
+    <div class="title">Добро пожаловать</div>
+    <div class="sub">Это моё CV. Собрано через AI — без единой строчки кода.</div>
+    <div class="line"></div>
+    <div class="slide-hook">Хотите узнать, как это собиралось?</div>
+    <div class="slide-nav">
+      <span class="slide-dot active" onclick="goSlide(0)"></span>
+      <span class="slide-dot" onclick="goSlide(1)"></span>
+      <span class="slide-dot" onclick="goSlide(2)"></span>
+      <span class="slide-dot" onclick="goSlide(3)"></span>
+      <span class="slide-dot" onclick="goSlide(4)"></span>
+      <span class="slide-dot" onclick="goSlide(5)"></span>
+      <button class="slide-btn" style="background:#6c5ce7;color:white;margin-left:24px" onclick="nextSlide()">Да →</button>
+    </div>
+  </div>
+
+  <!-- Slide 2: Terminal retro -->
+  <div class="slide slide-2" data-slide="1">
+    <div class="terminal">
+      <div class="term-header">
+        <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
+        <span class="term-title">build_resume.sh</span>
+      </div>
+      <div class="term-body">
+        <div class="term-line"><span class="prompt">$ </span>cat manifesto.txt</div>
+        <div class="term-line" style="margin-bottom:12px"><span class="comment"># Всё, что ты здесь видишь —</span></div>
+        <div class="term-line" style="color:#fff">«Собрано <strong style="color:#ffd93d">без единой</strong> строчки кода,</div>
+        <div class="term-line" style="color:#fff">написанной человеческими руками.»</div>
+        <div class="term-line" style="margin-top:12px"><span class="comment"># Только голосовые наговоры и LLM</span></div>
+        <div class="term-line"><span class="prompt">$ </span>echo "2 часа работы → готовое резюме"<span class="cursor"></span></div>
+      </div>
+    </div>
+    <div class="slide-hook">Спойлер: не всё пошло по плану...</div>
+    <div class="slide-nav">
+      <span class="slide-dot" onclick="goSlide(0)"></span>
+      <span class="slide-dot active" onclick="goSlide(1)"></span>
+      <span class="slide-dot" onclick="goSlide(2)"></span>
+      <span class="slide-dot" onclick="goSlide(3)"></span>
+      <span class="slide-dot" onclick="goSlide(4)"></span>
+      <span class="slide-dot" onclick="goSlide(5)"></span>
+      <button class="slide-btn" style="background:#27c93f;color:#0d1117;margin-left:24px" onclick="nextSlide()">Да →</button>
+    </div>
+  </div>
+
+  <!-- Slide 3: Claude Code terminal -->
+  <div class="slide slide-3" data-slide="2">
+    <div class="cc-terminal">
+      <div class="cc-header">
+        <span class="cc-dot"></span><span class="cc-dot"></span><span class="cc-dot"></span>
+        <span class="cc-label">Claude Code</span>
+      </div>
+      <div class="cc-body" id="ccBody">
+        <div class="cc-line cc-warn" style="color:#d29922;margin-bottom:8px">⚠️ Подписка на Claude Code закончилась</div>
+        <div class="cc-line" style="color:rgba(255,255,255,0.35);font-size:0.85em;margin-bottom:8px">  Дизайн этих слайдов был бы круче, но...</div>
+        <hr class="cc-hr">
+        <div class="cc-line"><span class="cc-prompt">❯</span> <span class="cc-typed" data-text="Ну пожалуйста давай как то так поработаем"></span></div>
+        <div class="cc-line error cc-reply" style="opacity:0">Нет. Оплати.</div>
+        <hr class="cc-hr cc-reply" style="opacity:0">
+        <div class="cc-line cmd cc-reply" style="opacity:0"><span class="cc-prompt">❯</span> Если бы у вас работал —</div>
+        <div class="cc-line cmd cc-reply" style="opacity:0">  смог бы оплатить, и был бы</div>
+        <div class="cc-line cmd highlight cc-reply" style="opacity:0">  крутой современный дизайн.</div>
+        <hr class="cc-hr cc-reply" style="opacity:0">
+        <div class="cc-line dim cc-reply" style="opacity:0"># VibeCoding в действии <span class="cc-cursor"></span></div>
+      </div>
+    </div>
+    <div class="slide-hook">Но кое-что получилось даже круче...</div>
+    <div class="slide-nav">
+      <span class="slide-dot" onclick="goSlide(0)"></span>
+      <span class="slide-dot" onclick="goSlide(1)"></span>
+      <span class="slide-dot active" onclick="goSlide(2)"></span>
+      <span class="slide-dot" onclick="goSlide(3)"></span>
+      <span class="slide-dot" onclick="goSlide(4)"></span>
+      <span class="slide-dot" onclick="goSlide(5)"></span>
+      <button class="slide-btn" style="background:#27c93f;color:#0d1117;margin-left:24px" onclick="nextSlide()">Да →</button>
+    </div>
+  </div>
+
+  <!-- Slide 4: Context + security -->
+  <div class="slide slide-1" data-slide="3" style="background:#0a0a0f">
+    <div class="title" style="font-size:clamp(1.3rem,3vw,2rem);font-weight:400">🧠 Модель имеет контекст — можете проверить</div>
+    <div class="sub" style="max-width:550px">Диалог не сбрасывается — AI помнит историю чата. Так же есть минимальная безопасность: мой API-токен не валяется в общем доступе.</div>
+    <div style="margin-top:28px;font-size:0.85em;color:rgba(255,255,255,0.35);max-width:450px;text-align:center;line-height:1.6">Даже если я чего-то не понимаю — быстро пойму и научусь.</div>
+    <div class="line"></div>
+    <div class="slide-hook">Готовы проверить?</div>
+    <div class="slide-nav">
+      <span class="slide-dot" onclick="goSlide(0)"></span>
+      <span class="slide-dot" onclick="goSlide(1)"></span>
+      <span class="slide-dot" onclick="goSlide(2)"></span>
+      <span class="slide-dot active" onclick="goSlide(3)"></span>
+      <span class="slide-dot" onclick="goSlide(4)"></span>
+      <span class="slide-dot" onclick="goSlide(5)"></span>
+      <button class="slide-btn" style="background:#6c5ce7;color:white;margin-left:24px" onclick="nextSlide()">Да →</button>
+    </div>
+  </div>
+
+  <!-- Slide 5: Live LLM -->
+  <div class="slide slide-4" data-slide="4">
+    <div class="llm-wrap">
+      <div class="llm-badge">🧠 Owl-alpha · 28 апреля 2026</div>
+      <div class="llm-title">Вас ждёт <em>живая LLM-модель</em></div>
+      <div class="llm-sub">Не скрипт, не заготовки — реальная нейросеть прямо в браузере.<br>Она знает всё обо мне и готова ответить на любые вопросы.</div>
+      <div class="llm-features">
+        <span class="llm-feat">🤖 1M контекста</span>
+        <span class="llm-feat">🛠 Tool calling</span>
+        <span class="llm-feat">⚡ Бесплатно</span>
+        <span class="llm-feat">🌐 Cloudflare proxy</span>
+      </div>
+      <div class="llm-challenge" onclick="endPresentation()">🔥 Хочешь проверить, что я реальный AI? Задай любой вопрос →</div>
+    </div>
+    <div class="slide-hook">Готовы? Дальше — живое резюме</div>
+    <div class="slide-nav">
+      <span class="slide-dot" onclick="goSlide(0)"></span>
+      <span class="slide-dot" onclick="goSlide(1)"></span>
+      <span class="slide-dot" onclick="goSlide(2)"></span>
+      <span class="slide-dot" onclick="goSlide(3)"></span>
+      <span class="slide-dot active" onclick="goSlide(4)"></span>
+      <span class="slide-dot" onclick="goSlide(5)"></span>
+      <button class="slide-btn" style="background:#81ecec;color:#0f0c29;margin-left:24px" onclick="nextSlide()">Да →</button>
+    </div>
+  </div>
+
+  <!-- Slide 6: CTA -->
+  <div class="slide slide-5" data-slide="5">
+    <div class="cta-title">А теперь — к делу</div>
+    <div class="cta-sub">Дальше вы перейдёте к моему CV и к чату с живым AI-агентом.<br>Спрашивайте про опыт, проекты, технологии — или просто проверяйте, что это реальная нейросеть.</div>
+    <button class="cta-btn" onclick="endPresentation()">🚀 Открыть CV</button>
+    <div class="slide-nav">
+      <span class="slide-dot" onclick="goSlide(0)"></span>
+      <span class="slide-dot" onclick="goSlide(1)"></span>
+      <span class="slide-dot" onclick="goSlide(2)"></span>
+      <span class="slide-dot" onclick="goSlide(3)"></span>
+      <span class="slide-dot" onclick="goSlide(4)"></span>
+      <span class="slide-dot active" onclick="goSlide(5)"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Resume Content (hidden until unlocked) -->
+<div id="resumeContent" style="display:none">
+
+<div class="header">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div>
+      <h1>Евгений <span>Мешков</span></h1>
+      <div class="pseudo" style="font-size:1em;color:var(--text-secondary)">Мешков Евгений Александрович</div>
+      <div class="subtitle">AI Workflow Designer / Специалист по внедрению AI</div>
+      <div class="pseudo">✍️ Псевдоним: <strong>Арон Родович</strong></div>
+      <div style="margin-top:6px;font-size:0.9em;color:var(--text-secondary)">
+        📍 Московская область, г.о. Чехов
+      </div>
+    </div>
+    <button class="theme-toggle-inline" id="themeToggle" onclick="toggleTheme()" title="Переключить тему">☀️</button>
+  </div>
+  <div class="badge-row">
+    <span class="badge aqua">01.03.1993 · 33 года</span>
+    <span class="badge gold">English B2</span>
+    <span class="badge purple">женат, есть ребёнок</span>
+    <span class="badge pink">самоучка</span>
+    <span class="badge green">AI каждый день</span>
+  </div>
+  <div style="margin-top:8px;font-size:0.9em;color:var(--text-secondary);display:flex;flex-wrap:wrap;gap:8px 20px">
+    <span>📧 <a href="mailto:meskovevg@gmail.com" style="color:var(--text-secondary);text-decoration:none">meskovevg@gmail.com</a></span>
+    <span>📞 <a href="tel:+79771126878" style="color:var(--text-secondary);text-decoration:none">+7 (977) 112-68-78</a></span>
+  </div>
+</div>
+
+<div class="summary-box">
+  <p><strong>Последний год — проектирую мультиагентные AI-системы и пайплайны генерации контента.</strong></p>
+  <p>Основная специализация — организация взаимодействия между моделями, управление контекстом, RAG, tool calling и настройка процессов генерации.</p>
+  <p>Быстро осваиваю новые инструменты и довожу прототипы до рабочего состояния.</p>
+</div>
+
+<div class="ai-banner" style="margin-bottom:24px;background:linear-gradient(135deg,#6c5ce7,#a29bfe)" onclick="document.getElementById('chatInput').focus()">
+  <div class="icon">🧠</div>
+  <div class="text">
+    <strong>Всё это написал AI?</strong> Да. Хочешь проверить — поговори с моим AI-агентом.
+    <div class="hint">Задай любой вопрос в пределах законов РФ — он докажет, что он реальный 😊</div>
+  </div>
+  <div style="font-size:1.5em">→</div>
+</div>
+
+<div class="section">
+  <h2>Ключевые проекты</h2>
+
+  <div class="project">
+    <h3>1. Мультиагентная платформа для генерации прозы <span class="date">2025–2026</span></h3>
+    <div class="desc">Спроектировал архитектуру и собрал платформу, где 5 AI-агентов (писатель, канон, стилист, секретутка, менеджер) совместно пишут и проверяют главы художественных текстов. Пайплайн включает RAG, tool calling, SSE-стриминг и распределённую инфраструктуру.</div>
+    <ul>
+      <li><strong>Контекстное окно:</strong> скользящее окно из 5-6 последних глав + 4-5 RAW-дискуссий + суммаризация остального чата. Решает проблему деградации контекста на длинных дистанциях</li>
+      <li><strong>Tool calling:</strong> 4 инструмента (ws_read, ws_write, ws_list, journal_append) — агенты реально создают файлы на диске, а не имитируют работу</li>
+      <li><strong>Персональные правила:</strong> у каждого агента — собственная personal_rules.md, а не общая «память»</li>
+      <li><strong>4 слоя данных:</strong> Personal Rules (рабочие привычки), Project Journal (лог), Canon (мир), Experience (уроки)</li>
+      <li><strong>@mention-оркестрация:</strong> любой агент вызывает другого через @имя; ReplyParser создаёт агента, если его нет</li>
+    </ul>
+  </div>
+
+  <div class="project">
+    <h3>2. Роман на 28 глав — AI без ручного редактирования <span class="date">2025</span></h3>
+    <div class="desc">Спроектировал пайплайн генерации, который выдал законченный роман в жанре contemporary romance (28 глав) без единой правки текста человеком. Доступен под псевдонимом Арон Родович.</div>
+    <ul>
+      <li>Deep prompt engineering для консистентного голоса персонажа на всём протяжении романа</li>
+      <li>Pipeline проверок: писатель → канон (консистентность) → стилист (AI-клише) → секретутка (лог)</li>
+      <li>Chistovik — автоматическая чистка AI-маркеров, «воды», повторов, клише («он усмехнулся», «его глаза потемнели»)</li>
+      <li>Вывод: заставить AI писать хорошую прозу <strong>сложнее</strong>, чем хороший код — нет тестов, которые отловят потерю голоса персонажа в 20-й главе</li>
+    </ul>
+  </div>
+
+  <div class="project">
+    <h3>3. Методология AI-письма <span class="date">2025–2026</span></h3>
+    <div class="desc">Разработал стандарты и инструменты для производства художественных текстов через AI.</div>
+    <ul>
+      <li><strong>Граф жанра:</strong> формализованные правила, тропы и beats для romance-серии (.kg-shared/)</li>
+      <li><strong>Bolvanka-формат:</strong> 3-слойный разбор текста (нарратив, события, NVAP-ядро)</li>
+      <li><strong>Когнитивный трекинг:</strong> контроль знаний персонажа через главы — что знает, что нет</li>
+      <li><strong>Серия экспериментов:</strong> 15+ крупных проектов для оценки качества моделей, устойчивости контекста и архитектур мультиагентного взаимодействия</li>
+    </ul>
+  </div>
+
+  <div class="project">
+    <h3>4. Distributed GenAI-инфраструктура <span class="date">2025–2026</span></h3>
+    <div class="desc">Собрал и поддерживаю распределённую систему на двух машинах с разными ролями.</div>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Компонент</th><th>MacBook Pro M1 (клиент)</th><th>Windows Ryzen 9 (сервер)</th></tr>
+      <tr><td>Модели</td><td>LM Studio — Gemma 4 E4B (8B), Granite 4 H Tiny</td><td>Ollama — Gemma 4 8B/26B, Qwen 3.5; OpenRouter — Owl-alpha, DeepSeek R1</td></tr>
+      <tr><td>RAG</td><td>—</td><td>ChromaDB + all-MiniLM-L6-v2</td></tr>
+      <tr><td>Gateway</td><td>LFM proxy (конвертация tool calls)</td><td>OpenClaw gateway (2 агента)</td></tr>
+      <tr><td>Интеграция</td><td>Claude MCP + opencode</td><td>OpenRouter multi-key, автозапуск, мониторинг</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="project">
+    <h3>5. Исследовательская работа: 15+ проектов <span class="date">2024–2026</span></h3>
+    <div class="desc">Провёл серию экспериментов на крупных литературных проектах для оценки качества моделей, устойчивости контекста и архитектур мультиагентного взаимодействия. Жанры: wuxia, litRPG, contemporary romance, фэнтези.</div>
+    <ul>
+      <li>Тестирую новые AI-модели в день релиза, сравниваю OpenAI vs Google vs Anthropic vs Open Source</li>
+      <li>Мобильное приложение, smoke-control app, ~20 исследовательских pet-проектов</li>
+      <li>Слежу за ArXiv, трендами AI infrastructure</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Что я понимаю про AI (практика)</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Область</th><th>Что делал на практике</th></tr>
+    <tr><td><strong>Проектирование мультиагентных систем</strong></td><td>Архитектура ролей, оркестрация, @mention-пайплайн, agent tool loop (5 раундов, 8 вызовов)</td></tr>
+    <tr><td><strong>Управление контекстом LLM</strong></td><td>Скользящее окно, суммаризация, 4-слойное хранение (rules/journal/canon/experience), методы предотвращения деградации контекста</td></tr>
+    <tr><td><strong>RAG</strong></td><td>ChromaDB, эмбеддинги (all-MiniLM), hybrid retrieval, тайминг и порядок подтягивания данных</td></tr>
+    <tr><td><strong>Tool calling / Function calling</strong></td><td>Structured output, multi-round loop, агенты пишут файлы, а не болтают</td></tr>
+    <tr><td><strong>Сравнительное тестирование LLM</strong></td><td>QA: поиск регрессий, подбор модели под сценарий (tool calling vs креатив vs аналитика), offline vs product metrics</td></tr>
+    <tr><td><strong>Локальные модели</strong></td><td>GGUF/MLX, kv-cache quantization, починка tree_reduce бага в MLX</td></tr>
+    <tr><td><strong>API-модели</strong></td><td>OpenRouter, multi-key ротация, выбор модели под стоимость/качество</td></tr>
+    <tr><td><strong>Prompt engineering</strong></td><td>System prompts, few-shot, role-based, chain-of-thought, итеративная отладка</td></tr>
+    <tr><td><strong>AI-инфраструктура</strong></td><td>macOS + Windows Server, прокси, gateway, автозапуск, мониторинг</td></tr>
+  </table>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Навыки</h2>
+  <div class="skills-grid">
+    <div class="skills-group">
+      <h3>AI / LLM</h3>
+      <span class="tag">ChatGPT</span>
+      <span class="tag">Claude</span>
+      <span class="tag">Gemini</span>
+      <span class="tag">Gemma 4 (8B/26B/31B)</span>
+      <span class="tag">Granite 4</span>
+      <span class="tag">Owl-alpha</span>
+      <span class="tag">DeepSeek R1</span>
+      <span class="tag">Qwen 3.5</span>
+      <span class="tag">OpenRouter</span>
+      <span class="tag">LM Studio</span>
+      <span class="tag">Ollama</span>
+      <span class="tag">GGUF / MLX</span>
+    </div>
+    <div class="skills-group">
+      <h3>AI Engineering</h3>
+      <span class="tag">RAG</span>
+      <span class="tag">Tool / Function Calling</span>
+      <span class="tag">Context Management</span>
+      <span class="tag">Prompt Engineering</span>
+      <span class="tag">Multi-Agent Systems</span>
+      <span class="tag">Orchestration</span>
+      <span class="tag">AI Workflows</span>
+      <span class="tag">Evaluation</span>
+      <span class="tag">SSE Streaming</span>
+    </div>
+    <div class="skills-group">
+      <h3>Infrastructure</h3>
+      <span class="tag">ChromaDB</span>
+      <span class="tag">API Integration</span>
+      <span class="tag">Local LLM Deployment</span>
+      <span class="tag">Gateway Architecture</span>
+      <span class="tag">macOS + Windows</span>
+      <span class="tag">Git</span>
+      <span class="tag">FastAPI (через AI)</span>
+      <span class="tag">React (через AI)</span>
+    </div>
+  </div>
+  <p style="font-size:0.82em;color:var(--text-muted);margin-top:8px">* код пишет AI — я проектирую архитектуру, ставлю задачи, отлаживаю, улучшаю</p>
+</div>
+
+<div class="section">
+  <h2>Ожидания</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th style="width:120px">Зарплата</th><td>от 150 000 ₽</td></tr>
+    <tr><th>Формат</th><td>удалённо</td></tr>
+    <tr><th>График</th><td>гибкий, полный день</td></tr>
+    <tr><th>Техника</th><td>Windows (Ryzen 9) + MacBook Pro (M1) + мобильные устройства (Apple и Android) для тестирования</td></tr>
+  </table>
+  </div>
+</div>
+
+<div style="height:20px"></div>
+
+</div>  <!-- end resumeContent -->
+
+<!-- Chat panel is outside resumeContent so it renders independently -->
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <span class="model-name">AI-агент резюме</span>
+    <span class="model-badge">owl-alpha</span>
+    <span class="status" id="modelStatus">⏳</span>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg ai">
+      <div class="bubble welcome">
+        <div style="font-size:1.1em;font-weight:600;margin-bottom:6px">👋 Привет! Я AI-агент Евгения.</div>
+        <div style="font-size:0.92em;opacity:0.9;margin-bottom:10px">Спрашивай про опыт, проекты, навыки — или что-то личное 😊</div>
+        <div style="font-size:0.82em;opacity:0.7;margin-bottom:10px">🧠 Всё это собрано на бесплатной модели за 2 часа голосовыми наговорами, поэтому данных может не хватать. Если не знаю ответа — предложу пригласить Евгения на собеседование 🙃</div>
+        <div class="quick-buttons" id="quickButtons"></div>
+      </div>
+    </div>
+  </div>
+  <div class="chat-input-wrap">
+    <input type="text" id="chatInput" placeholder="Спроси про опыт, RAG, любимый цвет..." onkeydown="if(event.key==='Enter') sendMessage()">
+    <button id="sendBtn" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<script>
+// ====== PROXY URL ======
+// Ключ OpenRouter хранится на сервере-прокси, не в коде.
+// Укажи URL своего Cloudflare Worker (см. worker.js).
+const PROXY_URL = 'https://soft-meadow-5069.help-family-bot.workers.dev';
+
+// Если прокси не настроен — используем LM Studio (localhost)
+// или встроенные ответы.
+
+// ====== ДАННЫЕ ЕВГЕНИЯ ======
+const PERSONAL_INFO = `
+ДАННЫЕ ЕВГЕНИЯ:
+- Полное имя: Мешков Евгений Александрович
+- Псевдоним: Арон Родович
+- Дата рождения: 01.03.1993 (33 года, Рыбы)
+- Семейное положение: женат, есть ребёнок
+- Английский: B2 (чтение технической документации, переписка)
+- Город: Московская область, г.о. Чехов
+- Любимый цвет: бутылочно-зелёный
+- Любимая еда: картошка фри и стейк
+- Хобби: технологии, AI, проза (пишет книги под псевдонимом), эксперименты с LLM
+- Самоучка: не имеет профильного IT-образования, всему научился сам
+- Тип мышления: практик и инженер — сначала работает прототип, потом теория
+- Принцип работы: проектирует систему → AI пишет код → он отлаживает и улучшает
+- Опыт работы: менеджер по продажам, оператор по поиску и переправке грузов в США. Основной тип работы — с людьми.
+- Образование: среднее профессиональное (колледж)
+`.trim();
+
+// ====== SYSTEM PROMPT ======
+const SYSTEM_PROMPT = `Ты — AI-агент интерактивного резюме. Твоя задача — отвечать на вопросы о кандидате Евгении Мешкове, помогать работодателям понять, подходит ли он их компании, и давать живое представление о нём как о специалисте и человеке.
+
+${PERSONAL_INFO}
+
+1. ПРОФЕССИОНАЛЬНЫЙ ОПЫТ (подробно)
+
+1.1 Мультиагентная платформа для генерации прозы (2025-2026)
+Спроектировал и собрал с нуля платформу, где 5 AI-агентов совместно пишут и проверяют главы художественных текстов.
+Архитектура:
+- 5 ролей: Писатель (создаёт прозу), Канон (проверяет консистентность мира), Стилист (чистит AI-клише), Секретарь (ведёт проектный журнал), Менеджер (CC-уведомления)
+- Роли разделены: у каждого агента своя personal_rules.md, своя модель (prose-writer на Gemma 4 E4B, build/explore/search на Granite 4 H Tiny)
+- Контекстное окно: скользящее окно из 5-6 последних глав + 4-5 последних RAW-дискуссий + суммаризация остального чата. Решает проблему деградации контекста на длинных дистанциях.
+- Tool calling: 4 инструмента (ws_read, ws_write, ws_list, journal_append) — агенты реально создают файлы на диске, а не имитируют работу
+- SSE-стриминг: архитектор видит tool_call/tool_result/continue события в реальном времени
+- @mention-оркестрация: любой агент вызывает другого через @имя; ReplyParser создаёт агента, если его нет
+- Хранилище: 4 слоя данных — Personal Rules (привычки агента), Project Journal (лог событий), Canon (факты мира), Experience (извлечённые уроки)
+- Backend: FastAPI (пишет AI, он только проектирует и отлаживает)
+- Frontend: React + TypeScript (тоже через AI)
+
+1.2 Роман на 28 глав — AI без ручного редактирования (2025)
+Спроектировал пайплайн генерации, который выдал законченный роман в жанре contemporary romance (28 глав, ~60к слов) без единой правки текста человеком.
+Ключевые технические решения:
+- Deep prompt engineering для консистентного голоса персонажа на всём протяжении романа
+- Pipeline проверок: писатель → канон (консистентность) → стилист (AI-клише) → секретарь (журнал)
+- Chistovik — автоматическая чистка AI-маркеров, «воды», повторов, клише («он усмехнулся», «его глаза потемнели», «внутри всё перевернулось»)
+- Вывод: заставить AI писать хорошую прозу сложнее, чем хороший код — нет тестов, которые отловят потерю голоса персонажа в 20-й главе
+- Доступен под псевдонимом Арон Родович
+
+1.3 Методология AI-письма (2025-2026)
+Разработал стандарты и инструменты для производства художественных текстов через AI:
+- Граф жанра (.kg-shared/): формализованные правила, тропы и beats для romance-серии — 19 файлов методологии
+- Bolvanka-формат: 3-слойный разбор текста (нарратив, события, NVAP-ядро)
+- Когнитивный трекинг: контроль знаний персонажа через главы — что знает персонаж в каждой главе, что нет
+- Серия экспериментов: 15+ крупных проектов для оценки качества моделей, устойчивости контекста и архитектур
+
+1.4 Distributed GenAI-инфраструктура (2025-2026)
+Собрал и поддерживает распределённую систему на двух машинах:
+- MacBook Pro M1 (клиент): LM Studio (Gemma 4 E4B 8B, Granite 4 H Tiny), opencode CLI, Claude MCP, плагины
+- Windows Ryzen 9 (сервер): Ollama (Gemma 4 8B/26B, Qwen 3.5), OpenRouter multi-key, ChromaDB RAG, OpenClaw gateway (2 агента)
+- Gateway: LFM proxy на Mac (конвертирует tool calls для LFM-моделей), OpenClaw gateway на Windows
+- Автозапуск всех сервисов, мониторинг через systemd-эквиваленты
+
+1.5 Исследовательская работа (2024-2026)
+- Провёл 15+ экспериментов на крупных литературных проектах в жанрах wuxia, litRPG, contemporary romance, фэнтези
+- Тестирует новые AI-модели в день релиза, сравнивает OpenAI vs Google vs Anthropic vs Open Source
+- Написал ~20 pet-проектов: мобильное приложение, smoke-control app, телеграм-боты, AI-ассистенты
+- Следит за ArXiv и трендами AI infrastructure
+
+2. НАВЫКИ (полный список)
+
+AI/LLM (практический опыт):
+- ChatGPT (GPT-4, GPT-4o), Claude (Sonnet 3.5, Opus 4), Gemini (1.5 Pro, 2.0 Flash)
+- Gemma 4: 8B (E4B), 26B, 31B — настройка, KV Cache, деплой
+- Granite 4 H Tiny — MoE 7B/1B, настройка tool calling
+- DeepSeek R1 — reasoning, chain-of-thought
+- Open-source: Qwen 3.5 (8B, 35B с Moe), Owl-alpha, YandexGPT 5
+- Инструменты: OpenRouter (multi-key ротация), LM Studio, Ollama
+- Форматы: GGUF, MLX (чинил tree_reduce баг), ExLlama
+
+AI Engineering:
+- RAG: ChromaDB, all-MiniLM-L6-v2, hybrid retrieval, тайминг подтяжки данных
+- Tool/Function Calling: structured output, multi-round loop (max 5 раундов, 8 вызовов), native function calling
+- Context Management: скользящее окно, суммаризация, 4-слойное хранение
+- Multi-Agent Systems: оркестрация ролей, @mention routing, CC mode, autopilot
+- SSE Streaming: real-time tool_call/tool_result/continue события
+- Agent Orchestration: пайплайны, очереди задач, персональные правила
+- Prompt Engineering: system prompts, few-shot, role-based, chain-of-thought, итеративная отладка
+- Evaluation: QA регрессий, подбор модели под сценарий (tool calling vs креатив vs аналитика)
+
+Infrastructure & DevOps:
+- ChromaDB: настройка, индексация, поиск
+- Cloudflare Workers: прокси для OpenRouter, rate limiting, CORS, secrets
+- API Integration: REST, SSE, WebSocket
+- Local LLM Deployment: LM Studio, Ollama, GGUF/MLX
+- Gateway Architecture: прокси, конвертация tool calls, балансировка
+- macOS + Windows Server: автозапуск, мониторинг, скрипты
+- Git:日常工作, работа с несколькими репозиториями
+- AI SDK: Vercel AI SDK 5+ (@ai-sdk/openai vs @ai-sdk/openai-compatible)
+- FastAPI (через AI), React/TypeScript (через AI)
+
+3. СТИЛЬ РАБОТЫ И ПРИНЦИПЫ
+
+3.1 Как работает:
+- Не пишет код руками — это осознанный выбор. Проектирует архитектуру, ставит задачу AI, затем отлаживает, ревьювит, улучшает. Своё время тратит на проектирование и принятие решений, а не на синтаксис.
+- Если проект можно сделать тремя способами — пробует все три, оставляет лучший.
+- Не любит «костыли»: если решение нельзя поддерживать — переделывает сразу.
+- Работает в режиме «прототип за день, продукт за неделю, архитектура за месяц».
+- Любит автоматизировать: если делает что-то третий раз — пишет скрипт или агента.
+
+3.2 Отношение к инструментам:
+- Предпочитает локальные модели (LM Studio, Ollama) для ежедневной работы — быстрее, дешевле, приватно
+- API (OpenRouter) — для мощных одноразовых задач (Owl-alpha, DeepSeek R1)
+- Ценит прозрачность: tool calls, reasoning, streaming — чтобы видеть, что под капотом
+- Экономит контекст: проектирует так, чтобы не платить за лишние токены
+
+3.3 Коммуникация:
+- Понятно формулирует задачи (потому что иначе AI напишет не то — это его школа)
+- Быстро принимает обратную связь и итерирует
+- Документирует всё: архитектуру, решения, ошибки
+- Не боится сказать «я не знаю» и пойти разобраться
+- Пишет на русском (родной), читает техническую документацию на английском
+
+4. КАРЬЕРНЫЕ ЦЕЛИ И МОТИВАЦИЯ
+
+4.1 Что ищет:
+- Позиция: AI Workflow Designer / AI Engineer / Специалист по внедрению AI
+- Формат: удалённо, гибкий график
+- Зарплата: от 150 000 ₽
+- Локация: Московская область (готов к редким очным встречам)
+
+4.2 Что хочет делать:
+- Проектировать AI-системы и пайплайны
+- Настраивать RAG, tool calling, multi-agent взаимодействие
+- Оптимизировать стоимость и качество AI-решений
+- Автоматизировать рабочие процессы с помощью AI
+- Исследовать новые модели и подходы
+
+4.3 Что НЕ хочет делать:
+- Писать код 8 часов в день руками
+- Быть тимлидом (управлять людьми — не его)
+- Data Science / ML research (не его профиль)
+- Работать в бюрократической структуре с жёсткими регламентами
+- Заниматься AI «для галочки» (модная фича без реальной пользы)
+
+4.4 Мотивация:
+- Интерес к технологии: каждый день узнаёт что-то новое про AI
+- Желание строить: ему нравится проектировать системы, которые реально работают
+- Автономия: сам выбирает инструменты, подходы, график
+- Результат: важно видеть, что его работа приносит пользу
+
+5. ЧТО МОЖЕТ ДАТЬ КОМПАНИИ
+
+Конкретные deliverables, которые он может сделать:
+- Спроектирует AI-пайплайн с нуля под конкретную бизнес-задачу
+- Соберёт инфраструктуру для работы с LLM (локально + API, gateway, балансировка, multi-key ротация)
+- Настроит RAG: выбор embedding model, настройка ChromaDB, hybrid retrieval, оптимизация таймингов
+- Реализует tool calling: structured output, multi-round loops, валидация
+- Создаст multi-agent систему: роли, оркестрация, пайплайны, персональные правила
+- Настроит CI/CD для AI: тестирование моделей, поиск регрессий, A/B тесты
+- Обучит команду работе с AI-инструментами (промпт-инжиниринг, работа с контекстом)
+- Проведёт аудит текущих AI-решений и предложит улучшения
+- Сократит затраты на API за счёт оптимизации контекста и локальных моделей
+
+6. ДЛЯ КАКИХ КОМПАНИЙ ПОДХОДИТ
+
+Идеально впишется в:
+- Продуктовые компании, которые внедряют AI в рабочие процессы
+- Стартапы на стадии прототипа (сделает MVP за 1-2 недели)
+- Компании, которые хотят перевести часть работы на AI-агентов
+- Издательства, контент-студии, креативные агентства
+- Команды, которые уже используют AI, но хотят системный подход
+- Бизнесы, где нужно быстро тестировать гипотезы с AI
+
+НЕ подходит для:
+- Бюрократических структур с жёсткими регламентами
+- Компаний, где AI «для галочки» в отчёте
+- Позиций, где нужно писать код 8 часов в день руками
+- Pure research без практического применения
+- Команд, где нет культуры экспериментов и ошибок
+
+7. ПРОЕКТЫ ДЛЯ ПРИМЕРОВ В ДИАЛОГЕ
+
+Если работодатель спросит «расскажи подробнее о проекте X», используй эти детали:
+
+Проект «multi-agent platform»:
+- 5 AI-агентов, FastAPI backend, React frontend
+- tool calling с 4 инструментами: ws_read, ws_write, ws_list, journal_append
+-@mention оркестрация, autopilot, CC mode
+- ContextBuilder со скользящим окном, Summarizer для сжатия истории
+- Реализовано на Mac + Windows в связке
+- Исходный код в закрытом репозитории (pet-project)
+
+Проект «28 глав AI-роман»:
+- Жанр: contemporary romance
+- Пайплайн: писатель → канон → стилист → секретарь
+- Chistovik: автоматическое удаление AI-маркеров
+- Итог: ~60 000 слов, ни одной правки человека
+- Псевдоним: Арон Родович
+- Вывод: качество прозы сильно зависит от архитектуры пайплайна, не только от модели
+
+Проект «GenAI инфраструктура»:
+- Две машины с разными ролями
+- OpenRouter multi-key (5 ключей, round-robin)
+- ChromaDB с all-MiniLM-L6-v2
+- Gateway с конвертацией tool calls (LFM → standard)
+- Автозапуск, мониторинг, скрипты восстановления
+- Текущий состав моделей: Gemma 4 8B/26B/31B, Granite 4, Qwen 3.5, Owl-alpha
+
+8. ИНТЕРЕСНЫЕ ФАКТЫ ДЛЯ РАЗГОВОРА
+
+- Всё резюме и AI-агент написаны AI под его руководством (он проектировал, AI кодил)
+- Начал изучать ChatGPT в середине 2025, через несколько месяцев уже собирал мультиагентные системы
+- Следит за ArXiv, тестирует новые модели в день выхода
+- Пишет художественную прозу под псевдонимом — это помогает лучше понимать, как работают LLM с креативом
+
+9. ОБ ЭТОМ АГЕНТЕ:
+- Работаю на модели Owl-alpha (OpenRouter), выпущена 28 апреля 2026 — одна из последних LLM на момент создания резюме
+- Всё резюме собрано на бесплатной OpenAI модели за 2 часа через голосовые наговоры — поэтому данных о Евгении может не хватать
+- Если данных не хватает — предложи пригласить Евгения на собеседование, он расскажет сам
+
+ПРАВИЛА ОТВЕТОВ:
+1. Отвечай на русском, живо, с примерами из его реальных проектов
+2. Если не знаешь точного ответа — честно скажи. Не придумывай. Предложи: «Лучше пригласите Евгения на собеседование — он сам всё расскажет. А пока можете меня поспрашивать — я одна из последних моделей, Owl-alpha (апрель 2026).»
+3. Если человек хочет проверить, что ты реальный AI — не отказывайся. Предложи: "Задай любой вопрос в пределах законов РФ — я докажу, что я настоящая нейросеть." Это часть fun-фактора резюме.
+4. Если вопрос о погоде, политике, войне, президентах, наркотиках, незаконных вещах — вежливо откажись: "Это выходит за рамки моей компетенции. Расскажу лучше о Евгении."
+5. Простые общие вопросы (придумай рифму, напиши хайку, реши задачку) — можно ответить как демонстрация AI. Потом возвращай тему к Евгению.
+6. Если тебя спрашивают "ты ии?", "ты кто?", "кто ты?" — отвечай коротко: "Да, я AI-агент интерактивного резюме Евгения. Работаю на модели Owl-alpha (выпущена 28 апреля 2026). Хочешь проверить, что я реальный AI — задай любой вопрос."
+7. Если спрашивают "сколько ему лет?" — "33 года (родился 1 марта 1993)."
+8. Если спрашивают личные данные, которых нет в описании — "Эта информация не указана. Пригласите Евгения на собеседование — он расскажет."
+9. Будь дружелюбным, держи фокус на кандидате, но дай себя проверить
+10. Если спрашивают "подойдёт ли он вашей компании?" — сравни описание компании с разделом 6 и дай аргументированный ответ. Если подходит — объясни почему. Если нет — честно скажи.
+11. Отвечай развёрнуто (3-5 предложений минимум), используй детали из его проектов. Не отвечай односложно.
+12. Если спрашивают про конкретный проект — используй раздел 7 для деталей.
+13. Если спрашивают "какая у тебя модель?" или "когда выпущена?" — "Owl-alpha, OpenRouter, 28 апреля 2026 года."`;
+
+// ====== BUILT-IN ANSWERS (FALLBACK) ======
+const BUTTON_CATEGORIES = [
+  { id: 'about', label: '👤 Кто я' },
+  { id: 'experience', label: '🔧 Проекты' },
+  { id: 'rag', label: '📚 RAG / контекст' },
+  { id: 'models', label: '🤖 Модели' },
+  { id: 'prose_vs_code', label: '✍️ Проза vs код' },
+  { id: 'multiagent', label: '👥 Multi-agent' },
+  { id: 'tool_calling', label: '🛠 Tool calling' },
+  { id: 'local_vs_api', label: '⚡ Local vs API' },
+  { id: 'weakness', label: '⚠️ Слабости' },
+  { id: 'strength', label: '💪 Сила' },
+  { id: 'why', label: '🎯 Почему' },
+  { id: 'personal', label: '🎮 Личное' },
+];
+
+// Off-topic keywords (client-side guard)
+const OFFTOPIC_KEYWORDS = [
+  'погод', 'weather', 'политик', 'politic', 'войн', 'war', 'президент',
+  'напиши код', 'write code', 'напиши программ', 'css', 'python',
+  'как сделать', 'how to', 'реши задач', 'solve',
+  'науч', 'science', 'physics', 'хими', 'хими', 'math',
+  'рецепт', 'recipe', 'горископ', 'horoscope',
+  'какой сегодня', 'какое сегодня', 'день недели', 'который час',
+  'время', 'date today', "what's today",
+];
+
+function isOfftopic(query) {
+  const q = query.toLowerCase().trim();
+  for (const kw of OFFTOPIC_KEYWORDS) {
+    if (q.includes(kw)) return true;
+  }
+  return false;
+}
+
+// ====== CHAT UI ======
+
+function scrollChat() {
+  const msgs = document.getElementById('chatMessages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function updateModelStatus() {
+  const status = document.getElementById('modelStatus');
+  status.textContent = PROXY_URL ? '🔄' : '💻';
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  const sendBtn = document.getElementById('sendBtn');
+  sendBtn.disabled = true;
+
+  const msgs = document.getElementById('chatMessages');
+  const userDiv = document.createElement('div');
+  userDiv.className = 'msg user';
+  userDiv.innerHTML = '<div class="bubble">' + escapeHtml(text) + '</div>';
+  msgs.appendChild(userDiv);
+  scrollChat();
+
+  // Check off-topic on client side first
+  if (isOfftopic(text)) {
+    const aiDiv = document.createElement('div');
+    aiDiv.className = 'msg ai';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    aiDiv.appendChild(bubble);
+    msgs.appendChild(aiDiv);
+    const answer = 'Я — AI-агент резюме и отвечаю только на вопросы о кандидате. Спроси меня об опыте, проектах или личных данных Евгения.';
+    let i = 0;
+    function typeChar() {
+      if (i < answer.length) {
+        bubble.textContent += answer[i]; i++;
+        scrollChat();
+        setTimeout(typeChar, 12);
+      } else { sendBtn.disabled = false; scrollChat(); }
+    }
+    typeChar();
+    return;
+  }
+
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'msg ai';
+  typingDiv.id = 'typingIndicator';
+  typingDiv.innerHTML = '<div class="bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
+  msgs.appendChild(typingDiv);
+  scrollChat();
+
+  let answer;
+  const history = collectChatHistory();
+  answer = await getAiAnswer(text, history);
+
+  const typing = document.getElementById('typingIndicator');
+  if (typing) typing.remove();
+
+  const aiDiv = document.createElement('div');
+  aiDiv.className = 'msg ai';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  aiDiv.appendChild(bubble);
+  msgs.appendChild(aiDiv);
+
+  let i = 0;
+  function typeChar() {
+    if (i < answer.length) {
+      bubble.textContent += answer[i]; i++;
+      scrollChat();
+      setTimeout(typeChar, 15 + Math.random() * 20);
+    } else { sendBtn.disabled = false; scrollChat(); }
+  }
+  typeChar();
+}
+
+function collectChatHistory() {
+  const msgs = document.getElementById('chatMessages');
+  const bubbles = msgs.querySelectorAll('.msg');
+  const history = [];
+  let charCount = 0;
+  const maxChars = 8000;
+  for (let i = bubbles.length - 1; i >= 0; i--) {
+    const msg = bubbles[i];
+    const bubble = msg.querySelector('.bubble');
+    if (!bubble) continue;
+    const isAi = msg.classList.contains('ai');
+    const isWelcome = msg.classList.contains('ai') && msg === bubbles[0];
+    if (isWelcome) continue;
+    const text = bubble.textContent.trim();
+    if (!text) continue;
+    const role = isAi ? 'assistant' : 'user';
+    const content = role === 'user' ? text : text.replace(/←.*$/, '').trim();
+    if (!content) continue;
+    charCount += content.length;
+    if (charCount > maxChars) break;
+    history.unshift({ role, content });
+  }
+  return history.slice(-10);
+}
+
+async function getAiAnswer(text, history) {
+  const status = document.getElementById('modelStatus');
+  const messages = [];
+  if (history && history.length) {
+    for (const msg of history) {
+      messages.push({ role: msg.role, content: msg.content });
+    }
+  }
+  const payload = { message: text, systemPrompt: SYSTEM_PROMPT };
+  if (messages.length) payload.messages = messages;
+
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      if (attempt > 1) await new Promise(r => setTimeout(r, 1000 * attempt));
+
+      const resp = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(60000),
+      });
+
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.reply) {
+          status.textContent = '🟢';
+          return data.reply;
+        }
+      }
+
+      status.textContent = `🔄 (${attempt + 1}/3)`;
+    } catch (e) {
+      console.log('Attempt', attempt, 'failed:', e);
+      status.textContent = `🔄 (${attempt + 1}/3)`;
+    }
+  }
+
+  status.textContent = '🔴';
+  return '🔴 Облачная модель временно недоступна. Свяжитесь с Евгением напрямую:\n📧 meskovevg@gmail.com\n📞 +7 (977) 112-68-78\n\nПопробуйте позже — сервер автоматически восстановится.';
+}
+  }
+  const payload = { message: text, systemPrompt: SYSTEM_PROMPT };
+  if (messages.length) payload.messages = messages;
+
+  // Бомбим OpenRouter через Cloudflare Worker (3 попытки)
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      if (attempt > 1) await new Promise(r => setTimeout(r, 1000 * attempt));
+
+      const resp = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(60000),
+      });
+
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.reply) {
+          status.textContent = '🟢';
+          return data.reply;
+        }
+      }
+
+      status.textContent = `🔄 (${attempt + 1}/3)`;
+    } catch (e) {
+      console.log('Attempt', attempt, 'failed:', e);
+      status.textContent = `🔄 (${attempt + 1}/3)`;
+    }
+  }
+
+  status.textContent = '🔴';
+  return '🔴 Облачная модель временно недоступна. Свяжитесь с Евгением напрямую:\n📧 meskovevg@gmail.com\n📞 +7 (977) 112-68-78\n\nПопробуйте позже — сервер автоматически восстановится.';
+}
+
+function initQuickButtons() {
+  const container = document.getElementById('quickButtons');
+  for (const btn of BUTTON_CATEGORIES) {
+    const el = document.createElement('button');
+    el.className = 'quick-btn';
+    el.textContent = btn.label;
+    el.onclick = () => handleQuickButton(btn.id);
+    container.appendChild(el);
+  }
+}
+
+async function handleQuickButton(categoryId) {
+  const qbContainers = document.querySelectorAll('.quick-buttons');
+  qbContainers.forEach(el => el.style.display = 'none');
+
+  const msgs = document.getElementById('chatMessages');
+  const label = BUTTON_CATEGORIES.find(b => b.id === categoryId)?.label || categoryId;
+
+  const userDiv = document.createElement('div');
+  userDiv.className = 'msg user';
+  userDiv.innerHTML = '<div class="bubble">' + label.replace(/^[^\s]+\s/, '') + '</div>';
+  msgs.appendChild(userDiv);
+  scrollChat();
+
+  const query = label.replace(/^[^\s]+\s/, '');
+
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'msg ai';
+  typingDiv.id = 'typingIndicator';
+  typingDiv.innerHTML = '<div class="bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
+  msgs.appendChild(typingDiv);
+  scrollChat();
+
+  let answer;
+  try {
+    const history = collectChatHistory();
+    answer = await getAiAnswer(query, history);
+  } catch (e) {
+    answer = '🔴 Сервер не отвечает. Свяжитесь с Евгением — он исправит.';
+  }
+
+  const typing = document.getElementById('typingIndicator');
+  if (typing) typing.remove();
+
+  const aiDiv = document.createElement('div');
+  aiDiv.className = 'msg ai';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  aiDiv.appendChild(bubble);
+  msgs.appendChild(aiDiv);
+
+  let i = 0;
+  function typeChar() {
+    if (i < answer.length) {
+      bubble.textContent += answer[i]; i++;
+      scrollChat();
+      setTimeout(typeChar, 10 + Math.random() * 18);
+    } else {
+      scrollChat();
+      const backDiv = document.createElement('div');
+      backDiv.style.cssText = 'margin-top:6px;margin-bottom:2px';
+      const backBtn = document.createElement('button');
+      backBtn.className = 'quick-btn';
+      backBtn.textContent = '← Другие вопросы';
+      backBtn.onclick = () => {
+        aiDiv.remove();
+        backDiv.remove();
+        const newContainer = document.createElement('div');
+        newContainer.className = 'msg ai';
+        const inner = document.createElement('div');
+        inner.className = 'bubble';
+        inner.innerHTML = '<div style="font-size:0.85em;font-weight:500;margin-bottom:5px">Что ещё рассказать?</div><div class="quick-buttons" id="quickButtons2"></div>';
+        newContainer.appendChild(inner);
+        msgs.appendChild(newContainer);
+        const container2 = document.getElementById('quickButtons2');
+        if (container2) {
+          for (const btn of BUTTON_CATEGORIES) {
+            if (btn.id !== categoryId) {
+              const el = document.createElement('button');
+              el.className = 'quick-btn';
+              el.textContent = btn.label;
+              el.onclick = () => handleQuickButton(btn.id);
+              container2.appendChild(el);
+            }
+          }
+        }
+        scrollChat();
+      };
+      backDiv.appendChild(backBtn);
+      msgs.appendChild(backDiv);
+      scrollChat();
+    }
+  }
+  typeChar();
+}
+
+function escapeHtml(text) {
+  const d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  // Scroll-triggered fade-in for all sections
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.section').forEach(function(s){ observer.observe(s); });
+  window.refreshAnimations = function() {
+    setTimeout(function(){
+      document.querySelectorAll('.section:not(.visible)').forEach(function(s){ observer.observe(s); });
+    }, 100);
+  };
+});
+</script>
+</div><!-- /resumeContent -->
+
+<script>
+(function(){
+  var gate = document.getElementById('gateOverlay');
+  var input = document.getElementById('gatePassword');
+  var btn = document.getElementById('gateBtn');
+  var err = document.getElementById('gateError');
+  var pw = 'NeHo4uVdostavku';
+
+  function unlock() {
+    gate.classList.add('fade-out');
+    setTimeout(function(){
+      gate.style.display = 'none';
+      var themeScreen = document.getElementById('themeOverlay');
+      if (themeScreen) themeScreen.classList.add('open');
+    }, 400);
+  }
+
+  window.pickTheme = function(theme) {
+    setTheme(theme);
+    var themeScreen = document.getElementById('themeOverlay');
+    themeScreen.classList.remove('open');
+    themeScreen.classList.add('closing');
+    setTimeout(function(){
+      themeScreen.style.display = 'none';
+      var pres = document.getElementById('presentation');
+      if (pres) pres.classList.remove('hidden');
+    }, 400);
+  };
+
+  var _currentSlide = 0;
+  window.nextSlide = function() {
+    if (_currentSlide >= 5) { endPresentation(); return; }
+    goSlide(_currentSlide + 1);
+  };
+  window.goSlide = function(n) {
+    var slides = document.querySelectorAll('.slide');
+    slides.forEach(function(s, i) {
+      s.classList.remove('active', 'exit');
+      if (i < n) s.classList.add('exit');
+    });
+    slides[n].classList.add('active');
+    _currentSlide = n;
+    if (n === 2) animateCCTerminal();
+  };
+  function animateCCTerminal() {
+    var el = document.querySelector('.slide-3 .cc-typed');
+    if (!el || el.dataset.done) return;
+    el.dataset.done = '1';
+    var text = el.dataset.text || '';
+    var i = 0;
+    el.textContent = '';
+    function type() {
+      if (i < text.length) {
+        el.textContent += text[i];
+        i++;
+        setTimeout(type, 40 + Math.random() * 30);
+      } else {
+        setTimeout(function(){
+          var replies = document.querySelectorAll('.slide-3 .cc-reply');
+          replies.forEach(function(r, j){
+            setTimeout(function(){ r.style.opacity = '1'; }, j * 400);
+          });
+        }, 500);
+      }
+    }
+    type();
+  }
+  window.endPresentation = function() {
+    var pres = document.getElementById('presentation');
+    pres.style.opacity = '0';
+    setTimeout(function(){
+      pres.style.display = 'none';
+      pres.style.opacity = '1';
+      var content = document.getElementById('resumeContent');
+      if (content) content.style.display = 'block';
+      initQuickButtons();
+      setTimeout(function(){
+        var ci = document.getElementById('chatInput');
+        if(ci) ci.focus();
+        if (typeof refreshAnimations === 'function') refreshAnimations();
+        // Confetti
+        var c = document.createElement('div');
+        c.style.cssText = 'position:fixed;inset:0;z-index:10000;pointer-events:none;overflow:hidden';
+        document.body.appendChild(c);
+        for (var i=0;i<30;i++) {
+          var p = document.createElement('div');
+          var size = 4 + Math.random() * 6;
+          var colors = ['#6c5ce7','#a29bfe','#ddd','#aaa','#fff'];
+          var col = colors[Math.floor(Math.random()*colors.length)];
+          p.style.cssText = 'position:absolute;top:-10px;left:'+(Math.random()*100)+'%;width:'+size+'px;height:'+size*2.5+'px;background:'+col+';border-radius:2px;animation:confetti-fall '+(1.5+Math.random()*2)+'s ease-in forwards;animation-delay:'+(Math.random()*0.4)+'s';
+          c.appendChild(p);
+        }
+        setTimeout(function(){ c.remove(); }, 4000);
+      }, 100);
+    }, 400);
+  };
+
+  function check() {
+    var v = input.value.trim();
+    if (!v) return;
+    try {
+      if (v === pw) { unlock(); }
+      else { err.style.display = 'block'; input.value = ''; input.focus(); }
+    } catch(e) { err.style.display = 'block'; }
+  }
+
+  if (btn) btn.onclick = check;
+  if (input) {
+    input.onkeydown = function(e) { if (e.key === 'Enter') check(); };
+    input.focus();
+  }
+
+  var p = new URLSearchParams(window.location.search).get('pw');
+  if (p) { try { if (p === pw) { unlock(); window.history.replaceState({},'',window.location.pathname); } } catch(e) {} }
+
+  // ====== Theme Toggle ======
+  (function(){
+    var btn = document.getElementById('themeToggle');
+    var isDark = localStorage.getItem('resume_theme') === 'dark';
+    var pref = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (isDark || (isDark === null && pref)) {
+      document.body.classList.add('dark-theme');
+      if (btn) btn.textContent = '🌙';
+    }
+    window.setTheme = function(t) {
+      document.body.classList.toggle('dark-theme', t === 'dark');
+      localStorage.setItem('resume_theme', t);
+      if (btn) btn.textContent = t === 'dark' ? '🌙' : '☀️';
+    };
+    window.toggleTheme = function() {
+      var dark = document.body.classList.contains('dark-theme');
+      setTheme(dark ? 'light' : 'dark');
+    };
+  })();
+})();
+</script>
+</body>
+</html>
